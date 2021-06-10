@@ -33,6 +33,12 @@ session_energy_wh = Gauge('session_energy_wh', 'Used energy of this charging ses
 config_status = Gauge('config_status', 'Config status')
 evse_state = Gauge('evse_state', 'Evse state')
 
+wifi_signal_strength = Gauge('wifi_signal_strength', 'WiFi signal strength')
+wifi_rssi = Gauge('wifi_rssi', 'WiFi RSSI')
+wifi_snr = Gauge('wifi_snr', 'WiFi SNR')
+wifi_connected = Gauge('wifi_connected', 'WiFi connected')
+internet = Gauge('internet', 'Internet connected')
+
 
 if __name__ == '__main__':
     print("Tesla wall connector exporter v0.1\n")
@@ -73,6 +79,14 @@ if __name__ == '__main__':
         session_energy_wh.set(response['session_energy_wh'])
         config_status.set(response['config_status'])
         evse_state.set(response['evse_state'])
+
+        response = json.loads(requests.get('http://' + ip_address + '/api/1/wifi_status').content.decode('UTF-8'))
+
+        wifi_signal_strength.set(response['wifi_signal_strength'])
+        wifi_rssi.set(response['wifi_rssi'])
+        wifi_snr.set(response['wifi_snr'])
+        wifi_connected.set(response['wifi_connected'])
+        internet.set(response['internet'])
 
         time.sleep(10)
 
