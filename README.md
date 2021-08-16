@@ -8,4 +8,4 @@ The exporter will listen on localhost:3225
 
 Example dashboard in Grafana:
 
-![Grafana example](grafana_wallbox.png)
+![Grafana example](chrome_ISNpQbM03N.png.png)
