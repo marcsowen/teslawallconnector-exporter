@@ -1,4 +1,4 @@
-# teslawallconnector-exporter
+# teslawallconnector-exporter v0.2
 
 Prometheus exporter for Tesla Wall Connector Gen 3.
 
