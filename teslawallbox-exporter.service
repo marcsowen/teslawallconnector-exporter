@@ -1,0 +1,11 @@
+[Unit]
+Description=teslawallbox-exporter v0.2
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3.7 /home/pi/bin/teslawallbox-exporter.py YOUR_IP_ADRESS
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
