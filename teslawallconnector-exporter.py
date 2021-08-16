@@ -39,14 +39,25 @@ wifi_snr = Gauge('wifi_snr', 'WiFi SNR')
 wifi_connected = Gauge('wifi_connected', 'WiFi connected')
 internet = Gauge('internet', 'Internet connected')
 
+contactor_cycles_loaded = Gauge('contactor_cycles_loaded', 'Contactor Cycles loaded')
+alert_count = Gauge('alert_count', 'Alert Count')
+thermal_foldbacks = Gauge('thermal_foldbacks', 'Thermal foldbacks')
+avg_startup_temp = Gauge('avg_startup_temp', 'AVG Startup Temp')
+charge_starts = Gauge('charge_starts', 'Charge Starts')
+energy_wh = Gauge('energy_wh', 'Alltime Charged wh')
+connector_cycles = Gauge('connector_cycles', 'Connector Cycles')
+uptime_all = Gauge('uptime_all', 'Uptime in seconds')
+charging_time_s = Gauge('charging_time_s', 'Charging Time in seconds')
+
 
 if __name__ == '__main__':
-    print("Tesla wall connector exporter v0.1\n")
+    print("Tesla wall connector exporter v0.2\n")
     ip_address = '192.168.178.64'
     server_port = 3225
     if len(sys.argv) > 1:
         ip_address = sys.argv[1]
 
+    print("Running on...")
     print("IP: " + ip_address)
     print("Port: " + str(server_port) + "\n")
 
@@ -88,5 +99,17 @@ if __name__ == '__main__':
         wifi_connected.set(response['wifi_connected'])
         internet.set(response['internet'])
 
-        time.sleep(10)
+        response = json.loads(requests.get('http://' + ip_address + '/api/1/lifetime').content.decode('UTF-8'))
 
+        contactor_cycles_loaded.set(response['contactor_cycles_loaded'])
+        alert_count.set(response['alert_count'])
+        thermal_foldbacks.set(response['thermal_foldbacks'])
+        avg_startup_temp.set(response['avg_startup_temp'])
+        charge_starts.set(response['charge_starts'])
+        energy_wh.set(response['energy_wh'])
+        connector_cycles.set(response['connector_cycles'])
+        uptime_all.set(response['uptime_s'])
+        charging_time_s.set(response['charging_time_s'])
+
+
+        time.sleep(10)
