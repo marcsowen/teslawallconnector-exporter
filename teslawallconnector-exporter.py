@@ -2,7 +2,7 @@
 
 import json
 import time
-
+import re
 import requests
 import sys
 from prometheus_client import start_http_server, Gauge, Enum
@@ -42,7 +42,6 @@ internet = Gauge('internet', 'Internet connected')
 contactor_cycles_loaded = Gauge('contactor_cycles_loaded', 'Contactor Cycles loaded')
 alert_count = Gauge('alert_count', 'Alert Count')
 thermal_foldbacks = Gauge('thermal_foldbacks', 'Thermal foldbacks')
-avg_startup_temp = Gauge('avg_startup_temp', 'AVG Startup Temp')
 charge_starts = Gauge('charge_starts', 'Charge Starts')
 energy_wh = Gauge('energy_wh', 'Alltime Charged wh')
 connector_cycles = Gauge('connector_cycles', 'Connector Cycles')
@@ -99,12 +98,16 @@ if __name__ == '__main__':
         wifi_connected.set(response['wifi_connected'])
         internet.set(response['internet'])
 
-        response = json.loads(requests.get('http://' + ip_address + '/api/1/lifetime').content.decode('UTF-8'))
+
+        response = requests.get('http://' + ip_address + '/api/1/lifetime').content.decode('UTF-8')
+
+        # Removing avg_startup_temp due to wrong Format provided by the Wallbox
+        response = response.replace('"avg_startup_temp":nan,', '')
+        response = json.loads(response)
 
         contactor_cycles_loaded.set(response['contactor_cycles_loaded'])
         alert_count.set(response['alert_count'])
         thermal_foldbacks.set(response['thermal_foldbacks'])
-        avg_startup_temp.set(response['avg_startup_temp'])
         charge_starts.set(response['charge_starts'])
         energy_wh.set(response['energy_wh'])
         connector_cycles.set(response['connector_cycles'])
