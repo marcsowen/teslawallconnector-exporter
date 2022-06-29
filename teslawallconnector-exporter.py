@@ -49,8 +49,11 @@ connector_cycles = Gauge('connector_cycles', 'Connector cycles')
 uptime_total_s = Gauge('uptime_total_s', 'Total uptime')
 charging_time_s = Gauge('charging_time_s', 'Total charging time')
 
+wall_connector_info = Gauge('wall_connector_info', 'Tesla wall connector info',
+                            ['firmware_version', 'part_number', 'serial_number'])
+
 if __name__ == '__main__':
-    print("Tesla wall connector exporter v0.2\n")
+    print("Tesla wall connector exporter v0.3\n")
     ip_address = '192.168.178.64'
     server_port = 3225
     if len(sys.argv) > 1:
@@ -111,5 +114,11 @@ if __name__ == '__main__':
         connector_cycles.set(response['connector_cycles'])
         uptime_total_s.set(response['uptime_s'])
         charging_time_s.set(response['charging_time_s'])
+
+        response = json.loads(requests.get('http://' + ip_address + '/api/1/version').content.decode('UTF-8'))
+
+        wall_connector_info.labels(firmware_version=response['firmware_version'],
+                                   part_number=response['part_number'],
+                                   serial_number=response['serial_number']).set(1)
 
         time.sleep(10)
