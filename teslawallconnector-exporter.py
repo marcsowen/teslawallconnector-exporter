@@ -50,7 +50,7 @@ uptime_total_s = Gauge('uptime_total_s', 'Total uptime')
 charging_time_s = Gauge('charging_time_s', 'Total charging time')
 
 if __name__ == '__main__':
-    print("Tesla wall connector exporter v0.1\n")
+    print("Tesla wall connector exporter v0.2\n")
     ip_address = '192.168.178.64'
     server_port = 3225
     if len(sys.argv) > 1:
