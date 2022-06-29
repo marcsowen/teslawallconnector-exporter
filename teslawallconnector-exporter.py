@@ -1,11 +1,11 @@
 #!/usr/bin/python3 -u
 
 import json
+import sys
 import time
 
 import requests
-import sys
-from prometheus_client import start_http_server, Gauge, Enum
+from prometheus_client import start_http_server, Gauge
 
 contactor_closed = Gauge('contactor_closed', 'Indicates if contactor is closed')
 vehicle_connected = Gauge('vehicle_connected', 'Indicates if vehicle is connected')
@@ -39,6 +39,15 @@ wifi_snr = Gauge('wifi_snr', 'WiFi SNR')
 wifi_connected = Gauge('wifi_connected', 'WiFi connected')
 internet = Gauge('internet', 'Internet connected')
 
+contactor_cycles = Gauge('contactor_cycles', 'Contactor cycles')
+contactor_cycles_loaded = Gauge('contactor_cycles_loaded', 'Contactor cycles loaded')
+alert_count = Gauge('alert_count', 'Alert count')
+thermal_foldbacks = Gauge('thermal_foldbacks', 'Thermal foldbacks')
+charge_starts = Gauge('charge_starts', 'Charge starts')
+energy_wh = Gauge('energy_wh', 'Total energy')
+connector_cycles = Gauge('connector_cycles', 'Connector cycles')
+uptime_total_s = Gauge('uptime_total_s', 'Total uptime')
+charging_time_s = Gauge('charging_time_s', 'Total charging time')
 
 if __name__ == '__main__':
     print("Tesla wall connector exporter v0.1\n")
@@ -88,5 +97,19 @@ if __name__ == '__main__':
         wifi_connected.set(response['wifi_connected'])
         internet.set(response['internet'])
 
-        time.sleep(10)
+        response = requests.get('http://' + ip_address + '/api/1/lifetime').content.decode('UTF-8')
 
+        response = response.replace('"avg_startup_temp":nan,', '')
+        response = json.loads(response)
+
+        contactor_cycles.set(response['contactor_cycles'])
+        contactor_cycles_loaded.set(response['contactor_cycles_loaded'])
+        alert_count.set(response['alert_count'])
+        thermal_foldbacks.set(response['thermal_foldbacks'])
+        charge_starts.set(response['charge_starts'])
+        energy_wh.set(response['energy_wh'])
+        connector_cycles.set(response['connector_cycles'])
+        uptime_total_s.set(response['uptime_s'])
+        charging_time_s.set(response['charging_time_s'])
+
+        time.sleep(10)
